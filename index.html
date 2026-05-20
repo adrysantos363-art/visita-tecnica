@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8"/>
+
+<meta
+  name="viewport"
+  content="width=device-width,
+  initial-scale=1.0,
+  maximum-scale=1.0,
+  user-scalable=no"
+/>
+
+<meta name="theme-color" content="#001f3f"/>
+
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Controle DR1"/>
+
+<title>Controle de Baterias DR1</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+}
+
+html{
+  touch-action:manipulation;
+}
+
+body{
+
+  background:linear-gradient(135deg,#0a84ff,#001f3f);
+
+  color:white;
+
+  min-height:100vh;
+
+  padding:15px;
+
+  overflow-x:hidden;
+
+}
+
+/* SAFE AREA IPHONE */
+
+body{
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+/* LOGO */
+
+.logo{
+  width:180px;
+  display:block;
+  margin:20px auto;
+}
+
+/* LOGIN */
+
+#login{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* APP */
+
+#app{
+  display:none;
+  width:100%;
+}
+
+/* CARDS */
+
+.card{
+
+  background:rgba(255,255,255,0.12);
+
+  backdrop-filter:blur(14px);
+
+  -webkit-backdrop-filter:blur(14px);
+
+  border-radius:24px;
+
+  padding:20px;
+
+  margin-bottom:15px;
+
+  box-shadow:0 4px 20px rgba(0,0,0,0.25);
+
+}
+
+/* INPUTS */
+
+input,
+select,
+button{
+
+  width:100%;
+
+  border:none;
+
+  border-radius:16px;
+
+  padding:16px;
+
+  margin-top:10px;
+
+  font-size:16px;
+
+  outline:none;
+
+}
+
+/* REMOVE ZOOM IOS */
+
+input,
+select{
+  font-size:16px;
+}
+
+/* BOTÕES */
+
+button{
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.2s;
+
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+/* CORES */
+
+.btn{
+  background:#34c759;
+  color:white;
+}
+
+.btn-export{
+  background:#0a84ff;
+  color:white;
+}
+
+.btn-del{
+  background:red;
+  color:white;
+  width:auto;
+  padding:8px 12px;
+}
+
+.btn-logout{
+  background:#ff3b30;
+  color:white;
+  width:auto;
+}
+
+/* TOPO */
+
+.top{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:10px;
+
+  margin-bottom:15px;
+
+}
+
+/* LISTAS */
+
+.battery-item{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:10px;
+
+  margin-top:10px;
+
+  background:rgba(255,255,255,0.08);
+
+  padding:12px;
+
+  border-radius:14px;
+
+}
+
+.history-item{
+
+  background:rgba(255,255,255,0.08);
+
+  padding:12px;
+
+  border-radius:14px;
+
+  margin-top:10px;
+
+  line-height:1.5;
+
+  font-size:14px;
+
+}
+
+/* GRÁFICO */
+
+canvas{
+
+  width:100% !important;
+
+  height:240px !important;
+
+}
+
+/* TITULOS */
+
+h2,h3{
+  margin-bottom:10px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  body{
+    padding:12px;
+  }
+
+  .top{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .card{
+    padding:16px;
+    border-radius:20px;
+  }
+
+  button,
+  input,
+  select{
+    min-height:52px;
+  }
+
+}
+
+/* IPHONE PEQUENO */
+
+@media(max-width:380px){
+
+  .logo{
+    width:140px;
+  }
+
+  h2{
+    font-size:20px;
+  }
+
+  h3{
+    font-size:17px;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="login">
+
+  <div class="card" style="width:100%;max-width:400px;">
+
+    <!-- LOGO OFFLINE BASE64 -->
+    <!-- SUBSTITUA PELO SEU BASE64 -->
+
+    <img
+      class="logo"
+      src="imagens/LOGOOOOO.png"
+    />
+
+    <h2 style="text-align:center;">
+      🚁 Controle de Baterias
+    </h2>
+
+    <input
+      id="name"
+      placeholder="Nome"
+    />
+
+    <input
+      id="cpf"
+      type="tel"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="11"
+      placeholder="CPF"
+      oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+    />
+
+    <button
+      class="btn"
+      onclick="login()"
+    >
+      Entrar
+    </button>
+
+  </div>
+
+</div>
+
+<!-- APP -->
+
+<div id="app">
+
+  <div class="top">
+
+    <div id="userInfo"></div>
+
+    <button
+      class="btn-logout"
+      onclick="logout()"
+    >
+      Sair
+    </button>
+
+  </div>
+
+  <!-- NOVA BATERIA -->
+
+  <div class="card">
+
+    <h3>🔋 Nova bateria</h3>
+
+    <input
+      id="batteryName"
+      placeholder="Nome da bateria"
+    />
+
+    <button
+      class="btn"
+      onclick="addBattery()"
+    >
+      Adicionar bateria
+    </button>
+
+  </div>
+
+  <!-- LISTA -->
+
+  <div class="card">
+
+    <h3>📋 Baterias</h3>
+
+    <div id="batteryList"></div>
+
+  </div>
+
+  <!-- REGISTRAR CICLO -->
+
+  <div class="card">
+
+    <h3>⚡ Registrar ciclo</h3>
+
+    <select id="batterySelect"></select>
+
+    <!-- TECLADO NUMÉRICO CELULAR -->
+
+    <input
+      id="cycleNumber"
+      type="number"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      enterkeyhint="done"
+      placeholder="Número do ciclo"
+    />
+
+    <button
+      class="btn"
+      onclick="addCycle()"
+    >
+      Registrar ciclo
+    </button>
+
+  </div>
+
+  <!-- HISTÓRICO -->
+
+  <div class="card">
+
+    <h3>📄 Histórico</h3>
+
+    <button
+      class="btn-export"
+      onclick="exportPDF()"
+    >
+      Gerar PDF
+    </button>
+
+    <div id="history"></div>
+
+  </div>
+
+  <!-- GRÁFICO -->
+
+  <div class="card">
+
+    <h3>📊 Gráfico</h3>
+
+    <canvas id="chart"></canvas>
+
+  </div>
+
+</div>
+
+<script>
+
+// ======================================
+// VARIÁVEIS
+// ======================================
+
+let user = null;
+let batteries = [];
+let cycles = [];
+let chart = null;
+
+// ======================================
+// LOGIN
+// ======================================
+
+function login(){
+
+  let name = document
+    .getElementById("name")
+    .value
+    .trim();
+
+  let cpf = document
+    .getElementById("cpf")
+    .value
+    .trim();
+
+  if(!name || cpf.length < 11){
+
+    alert("Preencha corretamente");
+    return;
+
+  }
+
+  user = { name, cpf };
+
+  localStorage.setItem(
+    "user",
+    JSON.stringify(user)
+  );
+
+  loadData();
+
+  startApp();
+
+}
+
+// ======================================
+// AUTO LOGIN
+// ======================================
+
+window.onload = function(){
+
+  let saved = JSON.parse(
+    localStorage.getItem("user")
+  );
+
+  if(saved){
+
+    user = saved;
+
+    loadData();
+
+    startApp();
+
+  }
+
+};
+
+// ======================================
+// LOGOUT
+// ======================================
+
+function logout(){
+
+  localStorage.removeItem("user");
+
+  location.reload();
+
+}
+
+// ======================================
+// DADOS
+// ======================================
+
+function loadData(){
+
+  batteries = JSON.parse(
+    localStorage.getItem(
+      "bat_" + user.cpf
+    )
+  ) || [];
+
+  cycles = JSON.parse(
+    localStorage.getItem(
+      "cyc_" + user.cpf
+    )
+  ) || [];
+
+}
+
+function save(){
+
+  localStorage.setItem(
+    "bat_" + user.cpf,
+    JSON.stringify(batteries)
+  );
+
+  localStorage.setItem(
+    "cyc_" + user.cpf,
+    JSON.stringify(cycles)
+  );
+
+}
+
+// ======================================
+// START APP
+// ======================================
+
+function startApp(){
+
+  document.getElementById("login")
+    .style.display = "none";
+
+  document.getElementById("app")
+    .style.display = "block";
+
+  document.getElementById("userInfo")
+    .innerHTML =
+      "<strong>" +
+      user.name +
+      "</strong><br>" +
+      user.cpf;
+
+  updateUI();
+
+}
+
+// ======================================
+// ADICIONAR BATERIA
+// ======================================
+
+function addBattery(){
+
+  let name = document
+    .getElementById("batteryName")
+    .value
+    .trim();
+
+  if(!name){
+
+    alert("Digite o nome");
+    return;
+
+  }
+
+  batteries.push({
+
+    id: Date.now(),
+
+    name
+
+  });
+
+  document.getElementById("batteryName")
+    .value = "";
+
+  save();
+
+  updateUI();
+
+}
+
+// ======================================
+// EXCLUIR
+// ======================================
+
+function deleteBattery(id){
+
+  let senha = prompt(
+    "Senha do gestor"
+  );
+
+  if(senha !== "DR1DRONE"){
+
+    alert("Senha incorreta");
+    return;
+
+  }
+
+  batteries = batteries.filter(
+    b => b.id != id
+  );
+
+  cycles = cycles.filter(
+    c => c.batteryId != id
+  );
+
+  save();
+
+  updateUI();
+
+}
+
+// ======================================
+// REGISTRAR CICLO
+// ======================================
+
+function addCycle(){
+
+  let id = document
+    .getElementById("batterySelect")
+    .value;
+
+  let num = document
+    .getElementById("cycleNumber")
+    .value;
+
+  if(!id || !num){
+
+    alert("Preencha os dados");
+    return;
+
+  }
+
+  cycles.push({
+
+    batteryId: id,
+
+    cycleNumber: parseInt(num),
+
+    timestamp: new Date()
+      .toLocaleString()
+
+  });
+
+  document.getElementById("cycleNumber")
+    .value = "";
+
+  save();
+
+  updateUI();
+
+}
+
+// ======================================
+// UI
+// ======================================
+
+function updateUI(){
+
+  let list = document
+    .getElementById("batteryList");
+
+  let select = document
+    .getElementById("batterySelect");
+
+  list.innerHTML = "";
+
+  select.innerHTML = "";
+
+  batteries.forEach(b => {
+
+    list.innerHTML += `
+
+      <div class="battery-item">
+
+        <span>🔋 ${b.name}</span>
+
+        <button
+          class="btn-del"
+          onclick="deleteBattery(${b.id})"
+        >
+          X
+        </button>
+
+      </div>
+
+    `;
+
+    select.innerHTML += `
+
+      <option value="${b.id}">
+        ${b.name}
+      </option>
+
+    `;
+
+  });
+
+  let history = document
+    .getElementById("history");
+
+  history.innerHTML = "";
+
+  cycles
+    .slice()
+    .reverse()
+    .forEach(c => {
+
+      let battery = batteries.find(
+        b => b.id == c.batteryId
+      );
+
+      let status = "🟢 OK";
+
+      if(c.cycleNumber >= 220){
+
+        status = "🔴 TROCA URGENTE";
+
+      }else if(c.cycleNumber >= 195){
+
+        status = "🟠 TROCAR EM BREVE";
+
+      }
+
+      history.innerHTML += `
+
+        <div class="history-item">
+
+          <strong>
+            ${battery?.name || "Bateria"}
+          </strong>
+
+          <br>
+
+          Ciclo: ${c.cycleNumber}
+
+          <br>
+
+          ${c.timestamp}
+
+          <br>
+
+          ${status}
+
+        </div>
+
+      `;
+
+    });
+
+  drawChart();
+
+}
+
+// ======================================
+// GRÁFICO
+// ======================================
+
+function drawChart(){
+
+  let ctx = document
+    .getElementById("chart")
+    .getContext("2d");
+
+  let labels = [];
+
+  let values = [];
+
+  let colors = [];
+
+  batteries.forEach(b => {
+
+    let registros = cycles.filter(
+      c => c.batteryId == b.id
+    );
+
+    let total = registros.length > 0
+      ? registros[
+          registros.length - 1
+        ].cycleNumber
+      : 0;
+
+    labels.push(b.name);
+
+    values.push(total);
+
+    if(total >= 220){
+
+      colors.push("red");
+
+    }else if(total >= 195){
+
+      colors.push("orange");
+
+    }else{
+
+      colors.push("#34c759");
+
+    }
+
+  });
+
+  if(chart){
+
+    chart.destroy();
+
+  }
+
+  chart = new Chart(ctx,{
+
+    type:"bar",
+
+    data:{
+
+      labels,
+
+      datasets:[{
+
+        label:"Ciclos",
+
+        data:values,
+
+        backgroundColor:colors,
+
+        borderRadius:10
+
+      }]
+
+    },
+
+    options:{
+
+      responsive:true,
+
+      maintainAspectRatio:false,
+
+      plugins:{
+
+        legend:{
+
+          labels:{
+
+            color:"white"
+
+          }
+
+        }
+
+      },
+
+      scales:{
+
+        x:{
+
+          ticks:{
+
+            color:"white"
+
+          }
+
+        },
+
+        y:{
+
+          beginAtZero:true,
+
+          max:360,
+
+          ticks:{
+
+            color:"white",
+
+            stepSize:10
+
+          }
+
+        }
+
+      }
+
+    }
+
+  });
+
+}
+
+// ======================================
+// PDF
+// ======================================
+
+function exportPDF(){
+
+  if(cycles.length === 0){
+
+    alert("Sem dados");
+    return;
+
+  }
+
+  const { jsPDF } = window.jspdf;
+
+  let doc = new jsPDF();
+
+  let y = 20;
+
+  doc.setFontSize(18);
+
+  doc.text(
+    "RELATORIO DE BATERIAS",
+    10,
+    y
+  );
+
+  y += 12;
+
+  doc.setFontSize(12);
+
+  doc.text(
+    "Nome: " + user.name,
+    10,
+    y
+  );
+
+  y += 8;
+
+  doc.text(
+    "CPF: " + user.cpf,
+    10,
+    y
+  );
+
+  y += 12;
+
+  cycles.forEach((c,index)=>{
+
+    let battery = batteries.find(
+      b => b.id == c.batteryId
+    );
+
+    let status = "OK";
+
+    if(c.cycleNumber >= 220){
+
+      status = "TROCA URGENTE";
+
+    }else if(c.cycleNumber >= 195){
+
+      status = "TROCAR EM BREVE";
+
+    }
+
+    doc.text(
+      `${index+1} - ${battery?.name || ""}`,
+      10,
+      y
+    );
+
+    y += 7;
+
+    doc.text(
+      `Ciclo: ${c.cycleNumber}`,
+      10,
+      y
+    );
+
+    y += 7;
+
+    doc.text(
+      `Status: ${status}`,
+      10,
+      y
+    );
+
+    y += 7;
+
+    doc.text(
+      `Data: ${c.timestamp}`,
+      10,
+      y
+    );
+
+    y += 12;
+
+    if(y > 270){
+
+      doc.addPage();
+
+      y = 20;
+
+    }
+
+  });
+
+  doc.save(
+    "relatorio_baterias.pdf"
+  );
+
+}
+
+</script>
+
+</body>
+</html>
