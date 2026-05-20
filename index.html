@@ -27,8 +27,8 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
@@ -41,21 +41,18 @@ body{
 
   padding:15px;
 
-  overflow-x:hidden;
-
-}
-
-.logo{
-  width:180px;
-  display:block;
-  margin:20px auto;
 }
 
 #login{
+
   min-height:100vh;
+
   display:flex;
+
   justify-content:center;
+
   align-items:center;
+
 }
 
 #app{
@@ -75,6 +72,16 @@ body{
   margin-bottom:15px;
 
   box-shadow:0 4px 20px rgba(0,0,0,0.25);
+
+}
+
+.logo{
+
+  width:180px;
+
+  display:block;
+
+  margin:20px auto;
 
 }
 
@@ -111,26 +118,41 @@ button:active{
 }
 
 .btn{
+
   background:#34c759;
+
   color:white;
+
 }
 
 .btn-export{
+
   background:#0a84ff;
+
   color:white;
+
 }
 
 .btn-del{
+
   background:red;
+
   color:white;
+
   width:auto;
+
   padding:8px 12px;
+
 }
 
 .btn-logout{
+
   background:#ff3b30;
+
   color:white;
+
   width:auto;
+
 }
 
 .top{
@@ -179,8 +201,6 @@ button:active{
 
   line-height:1.5;
 
-  font-size:14px;
-
 }
 
 canvas{
@@ -191,21 +211,11 @@ canvas{
 
 }
 
-h2,h3{
-  margin-bottom:10px;
-}
-
 @media(max-width:600px){
 
   .top{
     flex-direction:column;
     align-items:stretch;
-  }
-
-  button,
-  input,
-  select{
-    min-height:52px;
   }
 
 }
@@ -401,44 +411,36 @@ const firebaseConfig = {
 
 };
 
-// INICIAR
-
 const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
 
-// GLOBAL
+window.firebaseDB = {
 
-window.db = db;
+  db,
+  ref,
+  push,
+  set,
+  onValue,
+  remove
 
-window.ref = ref;
-
-window.push = push;
-
-window.set = set;
-
-window.onValue = onValue;
-
-window.remove = remove;
+};
 
 </script>
 
-<!-- APP -->
+<!-- SCRIPT PRINCIPAL -->
 
 <script>
 
-// =====================================
-// VARIÁVEIS
-// =====================================
-
 let user = null;
+
 let batteries = [];
+
 let cycles = [];
+
 let chart = null;
 
-// =====================================
 // LOGIN
-// =====================================
 
 function login(){
 
@@ -474,9 +476,7 @@ function login(){
 
 }
 
-// =====================================
 // AUTO LOGIN
-// =====================================
 
 window.onload = function(){
 
@@ -498,9 +498,7 @@ window.onload = function(){
 
 };
 
-// =====================================
 // LOGOUT
-// =====================================
 
 function logout(){
 
@@ -510,9 +508,7 @@ function logout(){
 
 }
 
-// =====================================
 // START APP
-// =====================================
 
 function startApp(){
 
@@ -534,11 +530,18 @@ function startApp(){
 
 }
 
-// =====================================
 // BATERIAS
-// =====================================
 
 async function addBattery(){
+
+  const {
+
+    db,
+    ref,
+    push,
+    set
+
+  } = window.firebaseDB;
 
   let name = document
     .getElementById("batteryName")
@@ -574,6 +577,14 @@ async function addBattery(){
 
 function loadBatteries(){
 
+  const {
+
+    db,
+    ref,
+    onValue
+
+  } = window.firebaseDB;
+
   onValue(
     ref(db,"batteries"),
     (snapshot)=>{
@@ -607,6 +618,14 @@ function loadBatteries(){
 
 async function deleteBattery(id){
 
+  const {
+
+    db,
+    ref,
+    remove
+
+  } = window.firebaseDB;
+
   let senha = prompt(
     "Senha do gestor"
   );
@@ -624,11 +643,18 @@ async function deleteBattery(id){
 
 }
 
-// =====================================
 // CICLOS
-// =====================================
 
 async function addCycle(){
+
+  const {
+
+    db,
+    ref,
+    push,
+    set
+
+  } = window.firebaseDB;
 
   let batteryId = document
     .getElementById("batterySelect")
@@ -670,6 +696,14 @@ async function addCycle(){
 
 function loadCycles(){
 
+  const {
+
+    db,
+    ref,
+    onValue
+
+  } = window.firebaseDB;
+
   onValue(
     ref(db,"cycles"),
     (snapshot)=>{
@@ -701,9 +735,7 @@ function loadCycles(){
 
 }
 
-// =====================================
 // UI
-// =====================================
 
 function updateUI(){
 
@@ -804,9 +836,7 @@ function updateUI(){
 
 }
 
-// =====================================
 // GRÁFICO
-// =====================================
 
 function drawChart(){
 
@@ -901,11 +931,9 @@ function drawChart(){
       scales:{
 
         x:{
-
           ticks:{
             color:"white"
           }
-
         },
 
         y:{
@@ -932,9 +960,7 @@ function drawChart(){
 
 }
 
-// =====================================
 // PDF
-// =====================================
 
 function exportPDF(){
 
