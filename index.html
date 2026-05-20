@@ -237,7 +237,7 @@ canvas{
 
     <img
       class="logo"
-      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5EUjEgQUVST0RZTkU8L3RleHQ+PC9zdmc+"
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0c2UiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuMzVlbSI+RFIxIEFFUk9EWU5FPC90ZXh0Pjwvc3ZnPg=="
     />
 
     <h2 style="text-align:center;">
@@ -253,7 +253,6 @@ canvas{
       id="cpf"
       type="tel"
       inputmode="numeric"
-      pattern="[0-9]*"
       maxlength="11"
       placeholder="CPF"
       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
@@ -329,8 +328,6 @@ canvas{
       id="cycleNumber"
       type="number"
       inputmode="numeric"
-      pattern="[0-9]*"
-      enterkeyhint="done"
       placeholder="Número do ciclo"
     />
 
@@ -391,7 +388,7 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// CONFIG
+// CONFIG FIREBASE
 
 const firebaseConfig = {
 
@@ -411,9 +408,13 @@ const firebaseConfig = {
 
 };
 
+// INICIAR
+
 const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
+
+// GLOBAL
 
 window.firebaseDB = {
 
@@ -530,7 +531,7 @@ function startApp(){
 
 }
 
-// BATERIAS
+// ADICIONAR BATERIA
 
 async function addBattery(){
 
@@ -575,6 +576,8 @@ async function addBattery(){
 
 }
 
+// CARREGAR BATERIAS
+
 function loadBatteries(){
 
   const {
@@ -591,30 +594,71 @@ function loadBatteries(){
 
       batteries = [];
 
+      let list = document
+        .getElementById("batteryList");
+
+      let select = document
+        .getElementById("batterySelect");
+
+      list.innerHTML = "";
+
+      select.innerHTML = "";
+
       snapshot.forEach((item)=>{
 
         let data = item.val();
 
         if(data.user == user.cpf){
 
-          batteries.push({
+          let battery = {
 
             id:item.key,
 
             name:data.name
 
-          });
+          };
+
+          batteries.push(battery);
+
+          list.innerHTML += `
+
+            <div class="battery-item">
+
+              <span>
+                🔋 ${battery.name}
+              </span>
+
+              <button
+                class="btn-del"
+                onclick="deleteBattery('${battery.id}')"
+              >
+                X
+              </button>
+
+            </div>
+
+          `;
+
+          select.innerHTML += `
+
+            <option value="${battery.id}">
+              ${battery.name}
+            </option>
+
+          `;
 
         }
 
       });
 
-      updateUI();
+      drawChart();
 
     }
   );
 
 }
+
+// DELETAR
 
 async function deleteBattery(id){
 
@@ -643,7 +687,7 @@ async function deleteBattery(id){
 
 }
 
-// CICLOS
+// ADICIONAR CICLO
 
 async function addCycle(){
 
@@ -694,6 +738,8 @@ async function addCycle(){
 
 }
 
+// CARREGAR CICLOS
+
 function loadCycles(){
 
   const {
@@ -709,6 +755,11 @@ function loadCycles(){
     (snapshot)=>{
 
       cycles = [];
+
+      let history = document
+        .getElementById("history");
+
+      history.innerHTML = "";
 
       snapshot.forEach((item)=>{
 
@@ -728,111 +779,57 @@ function loadCycles(){
 
       });
 
-      updateUI();
+      cycles
+        .slice()
+        .reverse()
+        .forEach(c=>{
+
+          let battery = batteries.find(
+            b => b.id == c.batteryId
+          );
+
+          let status = "🟢 OK";
+
+          if(c.cycleNumber >= 220){
+
+            status = "🔴 TROCA URGENTE";
+
+          }else if(c.cycleNumber >= 195){
+
+            status = "🟠 TROCAR EM BREVE";
+
+          }
+
+          history.innerHTML += `
+
+            <div class="history-item">
+
+              <strong>
+                ${battery?.name || "Bateria"}
+              </strong>
+
+              <br>
+
+              Ciclo: ${c.cycleNumber}
+
+              <br>
+
+              ${c.timestamp}
+
+              <br>
+
+              ${status}
+
+            </div>
+
+          `;
+
+        });
+
+      drawChart();
 
     }
   );
-
-}
-
-// UI
-
-function updateUI(){
-
-  let list = document
-    .getElementById("batteryList");
-
-  let select = document
-    .getElementById("batterySelect");
-
-  list.innerHTML = "";
-
-  select.innerHTML = "";
-
-  batteries.forEach(b=>{
-
-    list.innerHTML += `
-
-      <div class="battery-item">
-
-        <span>
-          🔋 ${b.name}
-        </span>
-
-        <button
-          class="btn-del"
-          onclick="deleteBattery('${b.id}')"
-        >
-          X
-        </button>
-
-      </div>
-
-    `;
-
-    select.innerHTML += `
-
-      <option value="${b.id}">
-        ${b.name}
-      </option>
-
-    `;
-
-  });
-
-  let history = document
-    .getElementById("history");
-
-  history.innerHTML = "";
-
-  cycles
-    .slice()
-    .reverse()
-    .forEach(c=>{
-
-      let battery = batteries.find(
-        b => b.id == c.batteryId
-      );
-
-      let status = "🟢 OK";
-
-      if(c.cycleNumber >= 220){
-
-        status = "🔴 TROCA URGENTE";
-
-      }else if(c.cycleNumber >= 195){
-
-        status = "🟠 TROCAR EM BREVE";
-
-      }
-
-      history.innerHTML += `
-
-        <div class="history-item">
-
-          <strong>
-            ${battery?.name || "Bateria"}
-          </strong>
-
-          <br>
-
-          Ciclo: ${c.cycleNumber}
-
-          <br>
-
-          ${c.timestamp}
-
-          <br>
-
-          ${status}
-
-        </div>
-
-      `;
-
-    });
-
-  drawChart();
 
 }
 
