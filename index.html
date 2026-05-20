@@ -15,10 +15,6 @@
 
 <meta name="theme-color" content="#001f3f"/>
 
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Controle DR1"/>
-
 <title>Controle de Baterias DR1</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,10 +31,6 @@
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
 }
 
-html{
-  touch-action:manipulation;
-}
-
 body{
 
   background:linear-gradient(135deg,#0a84ff,#001f3f);
@@ -53,22 +45,11 @@ body{
 
 }
 
-/* SAFE AREA IPHONE */
-
-body{
-  padding-top:env(safe-area-inset-top);
-  padding-bottom:env(safe-area-inset-bottom);
-}
-
-/* LOGO */
-
 .logo{
   width:180px;
   display:block;
   margin:20px auto;
 }
-
-/* LOGIN */
 
 #login{
   min-height:100vh;
@@ -77,22 +58,15 @@ body{
   align-items:center;
 }
 
-/* APP */
-
 #app{
   display:none;
-  width:100%;
 }
-
-/* CARDS */
 
 .card{
 
   background:rgba(255,255,255,0.12);
 
   backdrop-filter:blur(14px);
-
-  -webkit-backdrop-filter:blur(14px);
 
   border-radius:24px;
 
@@ -103,8 +77,6 @@ body{
   box-shadow:0 4px 20px rgba(0,0,0,0.25);
 
 }
-
-/* INPUTS */
 
 input,
 select,
@@ -126,30 +98,17 @@ button{
 
 }
 
-/* REMOVE ZOOM IOS */
-
-input,
-select{
-  font-size:16px;
-}
-
-/* BOTÕES */
-
 button{
 
   font-weight:bold;
 
   cursor:pointer;
 
-  transition:0.2s;
-
 }
 
 button:active{
   transform:scale(0.98);
 }
-
-/* CORES */
 
 .btn{
   background:#34c759;
@@ -174,8 +133,6 @@ button:active{
   width:auto;
 }
 
-/* TOPO */
-
 .top{
 
   display:flex;
@@ -189,8 +146,6 @@ button:active{
   margin-bottom:15px;
 
 }
-
-/* LISTAS */
 
 .battery-item{
 
@@ -228,8 +183,6 @@ button:active{
 
 }
 
-/* GRÁFICO */
-
 canvas{
 
   width:100% !important;
@@ -238,52 +191,21 @@ canvas{
 
 }
 
-/* TITULOS */
-
 h2,h3{
   margin-bottom:10px;
 }
 
-/* MOBILE */
-
 @media(max-width:600px){
-
-  body{
-    padding:12px;
-  }
 
   .top{
     flex-direction:column;
     align-items:stretch;
   }
 
-  .card{
-    padding:16px;
-    border-radius:20px;
-  }
-
   button,
   input,
   select{
     min-height:52px;
-  }
-
-}
-
-/* IPHONE PEQUENO */
-
-@media(max-width:380px){
-
-  .logo{
-    width:140px;
-  }
-
-  h2{
-    font-size:20px;
-  }
-
-  h3{
-    font-size:17px;
   }
 
 }
@@ -298,14 +220,14 @@ h2,h3{
 
 <div id="login">
 
-  <div class="card" style="width:100%;max-width:400px;">
-
-    <!-- LOGO OFFLINE BASE64 -->
-    <!-- SUBSTITUA PELO SEU BASE64 -->
+  <div
+    class="card"
+    style="width:100%;max-width:400px;"
+  >
 
     <img
       class="logo"
-      src="LOGOOOOO.png"
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5EUjEgQUVST0RZTkU8L3RleHQ+PC9zdmc+"
     />
 
     <h2 style="text-align:center;">
@@ -385,15 +307,13 @@ h2,h3{
 
   </div>
 
-  <!-- REGISTRAR CICLO -->
+  <!-- CICLOS -->
 
   <div class="card">
 
     <h3>⚡ Registrar ciclo</h3>
 
     <select id="batterySelect"></select>
-
-    <!-- TECLADO NUMÉRICO CELULAR -->
 
     <input
       id="cycleNumber"
@@ -442,20 +362,83 @@ h2,h3{
 
 </div>
 
+<!-- FIREBASE -->
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
+  getDatabase,
+  ref,
+  push,
+  set,
+  onValue,
+  remove
+
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// CONFIG
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCdUOryg1RFkedMmGG68MjkmpUD5iW8XQE",
+
+  authDomain: "controle-baterias-75a1a.firebaseapp.com",
+
+  databaseURL: "https://controle-baterias-75a1a-default-rtdb.firebaseio.com",
+
+  projectId: "controle-baterias-75a1a",
+
+  storageBucket: "controle-baterias-75a1a.firebasestorage.app",
+
+  messagingSenderId: "339558617145",
+
+  appId: "1:339558617145:web:309d0917e879ea58c3fde8"
+
+};
+
+// INICIAR
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+// GLOBAL
+
+window.db = db;
+
+window.ref = ref;
+
+window.push = push;
+
+window.set = set;
+
+window.onValue = onValue;
+
+window.remove = remove;
+
+</script>
+
+<!-- APP -->
+
 <script>
 
-// ======================================
+// =====================================
 // VARIÁVEIS
-// ======================================
+// =====================================
 
 let user = null;
 let batteries = [];
 let cycles = [];
 let chart = null;
 
-// ======================================
+// =====================================
 // LOGIN
-// ======================================
+// =====================================
 
 function login(){
 
@@ -483,15 +466,17 @@ function login(){
     JSON.stringify(user)
   );
 
-  loadData();
-
   startApp();
+
+  loadBatteries();
+
+  loadCycles();
 
 }
 
-// ======================================
+// =====================================
 // AUTO LOGIN
-// ======================================
+// =====================================
 
 window.onload = function(){
 
@@ -503,17 +488,19 @@ window.onload = function(){
 
     user = saved;
 
-    loadData();
-
     startApp();
+
+    loadBatteries();
+
+    loadCycles();
 
   }
 
 };
 
-// ======================================
+// =====================================
 // LOGOUT
-// ======================================
+// =====================================
 
 function logout(){
 
@@ -523,68 +510,35 @@ function logout(){
 
 }
 
-// ======================================
-// DADOS
-// ======================================
-
-function loadData(){
-
-  batteries = JSON.parse(
-    localStorage.getItem(
-      "bat_" + user.cpf
-    )
-  ) || [];
-
-  cycles = JSON.parse(
-    localStorage.getItem(
-      "cyc_" + user.cpf
-    )
-  ) || [];
-
-}
-
-function save(){
-
-  localStorage.setItem(
-    "bat_" + user.cpf,
-    JSON.stringify(batteries)
-  );
-
-  localStorage.setItem(
-    "cyc_" + user.cpf,
-    JSON.stringify(cycles)
-  );
-
-}
-
-// ======================================
+// =====================================
 // START APP
-// ======================================
+// =====================================
 
 function startApp(){
 
-  document.getElementById("login")
+  document
+    .getElementById("login")
     .style.display = "none";
 
-  document.getElementById("app")
+  document
+    .getElementById("app")
     .style.display = "block";
 
-  document.getElementById("userInfo")
+  document
+    .getElementById("userInfo")
     .innerHTML =
       "<strong>" +
       user.name +
       "</strong><br>" +
       user.cpf;
 
-  updateUI();
-
 }
 
-// ======================================
-// ADICIONAR BATERIA
-// ======================================
+// =====================================
+// BATERIAS
+// =====================================
 
-function addBattery(){
+async function addBattery(){
 
   let name = document
     .getElementById("batteryName")
@@ -598,28 +552,60 @@ function addBattery(){
 
   }
 
-  batteries.push({
+  const newBattery = push(
+    ref(db,"batteries")
+  );
 
-    id: Date.now(),
+  await set(newBattery,{
 
-    name
+    name:name,
+
+    user:user.cpf,
+
+    created:Date.now()
 
   });
 
-  document.getElementById("batteryName")
+  document
+    .getElementById("batteryName")
     .value = "";
-
-  save();
-
-  updateUI();
 
 }
 
-// ======================================
-// EXCLUIR
-// ======================================
+function loadBatteries(){
 
-function deleteBattery(id){
+  onValue(
+    ref(db,"batteries"),
+    (snapshot)=>{
+
+      batteries = [];
+
+      snapshot.forEach((item)=>{
+
+        let data = item.val();
+
+        if(data.user == user.cpf){
+
+          batteries.push({
+
+            id:item.key,
+
+            name:data.name
+
+          });
+
+        }
+
+      });
+
+      updateUI();
+
+    }
+  );
+
+}
+
+async function deleteBattery(id){
 
   let senha = prompt(
     "Senha do gestor"
@@ -632,64 +618,92 @@ function deleteBattery(id){
 
   }
 
-  batteries = batteries.filter(
-    b => b.id != id
+  await remove(
+    ref(db,"batteries/" + id)
   );
-
-  cycles = cycles.filter(
-    c => c.batteryId != id
-  );
-
-  save();
-
-  updateUI();
 
 }
 
-// ======================================
-// REGISTRAR CICLO
-// ======================================
+// =====================================
+// CICLOS
+// =====================================
 
-function addCycle(){
+async function addCycle(){
 
-  let id = document
+  let batteryId = document
     .getElementById("batterySelect")
     .value;
 
-  let num = document
+  let cycleNumber = document
     .getElementById("cycleNumber")
     .value;
 
-  if(!id || !num){
+  if(!batteryId || !cycleNumber){
 
     alert("Preencha os dados");
     return;
 
   }
 
-  cycles.push({
+  const newCycle = push(
+    ref(db,"cycles")
+  );
 
-    batteryId: id,
+  await set(newCycle,{
 
-    cycleNumber: parseInt(num),
+    batteryId:batteryId,
 
-    timestamp: new Date()
+    cycleNumber:parseInt(cycleNumber),
+
+    user:user.cpf,
+
+    timestamp:new Date()
       .toLocaleString()
 
   });
 
-  document.getElementById("cycleNumber")
+  document
+    .getElementById("cycleNumber")
     .value = "";
-
-  save();
-
-  updateUI();
 
 }
 
-// ======================================
+function loadCycles(){
+
+  onValue(
+    ref(db,"cycles"),
+    (snapshot)=>{
+
+      cycles = [];
+
+      snapshot.forEach((item)=>{
+
+        let data = item.val();
+
+        if(data.user == user.cpf){
+
+          cycles.push({
+
+            id:item.key,
+
+            ...data
+
+          });
+
+        }
+
+      });
+
+      updateUI();
+
+    }
+  );
+
+}
+
+// =====================================
 // UI
-// ======================================
+// =====================================
 
 function updateUI(){
 
@@ -703,17 +717,19 @@ function updateUI(){
 
   select.innerHTML = "";
 
-  batteries.forEach(b => {
+  batteries.forEach(b=>{
 
     list.innerHTML += `
 
       <div class="battery-item">
 
-        <span>🔋 ${b.name}</span>
+        <span>
+          🔋 ${b.name}
+        </span>
 
         <button
           class="btn-del"
-          onclick="deleteBattery(${b.id})"
+          onclick="deleteBattery('${b.id}')"
         >
           X
         </button>
@@ -740,7 +756,7 @@ function updateUI(){
   cycles
     .slice()
     .reverse()
-    .forEach(c => {
+    .forEach(c=>{
 
       let battery = batteries.find(
         b => b.id == c.batteryId
@@ -788,9 +804,9 @@ function updateUI(){
 
 }
 
-// ======================================
+// =====================================
 // GRÁFICO
-// ======================================
+// =====================================
 
 function drawChart(){
 
@@ -804,7 +820,7 @@ function drawChart(){
 
   let colors = [];
 
-  batteries.forEach(b => {
+  batteries.forEach(b=>{
 
     let registros = cycles.filter(
       c => c.batteryId == b.id
@@ -875,9 +891,7 @@ function drawChart(){
         legend:{
 
           labels:{
-
             color:"white"
-
           }
 
         }
@@ -889,9 +903,7 @@ function drawChart(){
         x:{
 
           ticks:{
-
             color:"white"
-
           }
 
         },
@@ -920,9 +932,9 @@ function drawChart(){
 
 }
 
-// ======================================
+// =====================================
 // PDF
-// ======================================
+// =====================================
 
 function exportPDF(){
 
