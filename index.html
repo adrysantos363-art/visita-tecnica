@@ -671,10 +671,15 @@ window.firebaseDB = {
 };
 
 </script>
-
 <script>
 
 let user = null;
+
+let batteries = [];
+
+let cycles = [];
+
+let chart = null;
 
 /* LOGIN */
 
@@ -703,19 +708,11 @@ function login(){
     JSON.stringify(user)
   );
 
-  document.getElementById("login")
-  .style.display = "none";
+  startApp();
 
-  document.getElementById("app")
-  .style.display = "block";
+  loadBatteries();
 
-  document.getElementById("userInfo")
-  .innerHTML =
-
-  "<strong>" +
-  user.name +
-  "</strong><br>" +
-  user.cpf;
+  loadCycles();
 
 }
 
@@ -732,23 +729,35 @@ window.onload = function(){
 
     user = saved;
 
-    document.getElementById("login")
-    .style.display = "none";
+    startApp();
 
-    document.getElementById("app")
-    .style.display = "block";
+    loadBatteries();
 
-    document.getElementById("userInfo")
-    .innerHTML =
-
-    "<strong>" +
-    user.name +
-    "</strong><br>" +
-    user.cpf;
+    loadCycles();
 
   }
 
 };
+
+/* START */
+
+function startApp(){
+
+  document.getElementById("login")
+  .style.display = "none";
+
+  document.getElementById("app")
+  .style.display = "block";
+
+  document.getElementById("userInfo")
+  .innerHTML =
+
+  "<strong>" +
+  user.name +
+  "</strong><br>" +
+  user.cpf;
+
+}
 
 /* LOGOUT */
 
@@ -757,6 +766,416 @@ function logout(){
   localStorage.removeItem("user");
 
   location.reload();
+
+}
+
+/* ADD BATERIA */
+
+async function addBattery(){
+
+  const {
+    db,
+    ref,
+    push,
+    set
+  } = window.firebaseDB;
+
+  let name =
+  document.getElementById("batteryName")
+  .value.trim();
+
+  if(!name){
+
+    alert("Digite o nome");
+    return;
+
+  }
+
+  const newBattery =
+  push(ref(db,"batteries"));
+
+  await set(newBattery,{
+
+    name:name,
+
+    created:Date.now()
+
+  });
+
+  document.getElementById(
+    "batteryName"
+  ).value = "";
+
+}
+
+/* LOAD BATERIAS */
+
+function loadBatteries(){
+
+  const {
+    db,
+    ref,
+    onValue
+  } = window.firebaseDB;
+
+  onValue(
+    ref(db,"batteries"),
+    (snapshot)=>{
+
+      batteries = [];
+
+      let list =
+      document.getElementById(
+        "batteryList"
+      );
+
+      let select =
+      document.getElementById(
+        "batterySelect"
+      );
+
+      list.innerHTML = "";
+
+      select.innerHTML = "";
+
+      snapshot.forEach((item)=>{
+
+        let data = item.val();
+
+        let battery = {
+
+          id:item.key,
+
+          name:data.name
+
+        };
+
+        batteries.push(battery);
+
+        list.innerHTML += `
+
+          <div class="battery-item">
+
+            <span>
+              🔋 ${battery.name}
+            </span>
+
+            <button
+              class="btn-del"
+              onclick="deleteBattery('${battery.id}')"
+            >
+              X
+            </button>
+
+          </div>
+
+        `;
+
+        select.innerHTML += `
+
+          <option value="${battery.id}">
+            ${battery.name}
+          </option>
+
+        `;
+
+      });
+
+      updateDashboard();
+
+      drawChart();
+
+    }
+  );
+
+}
+
+/* DELETE */
+
+async function deleteBattery(id){
+
+  const {
+    db,
+    ref,
+    remove
+  } = window.firebaseDB;
+
+  let senha =
+  prompt("Senha gestor");
+
+  if(senha !== "DR1DRONE"){
+
+    alert("Senha incorreta");
+
+    return;
+
+  }
+
+  await remove(
+    ref(db,"batteries/" + id)
+  );
+
+}
+
+/* ADD CICLO */
+
+async function addCycle(){
+
+  const {
+    db,
+    ref,
+    push,
+    set
+  } = window.firebaseDB;
+
+  let batteryId =
+  document.getElementById(
+    "batterySelect"
+  ).value;
+
+  let cycleNumber =
+  document.getElementById(
+    "cycleNumber"
+  ).value;
+
+  if(!batteryId || !cycleNumber){
+
+    alert("Preencha");
+
+    return;
+
+  }
+
+  const newCycle =
+  push(ref(db,"cycles"));
+
+  await set(newCycle,{
+
+    batteryId:batteryId,
+
+    cycleNumber:
+    parseInt(cycleNumber),
+
+    timestamp:
+    new Date()
+    .toLocaleString()
+
+  });
+
+  document.getElementById(
+    "cycleNumber"
+  ).value = "";
+
+}
+
+/* LOAD CICLOS */
+
+function loadCycles(){
+
+  const {
+    db,
+    ref,
+    onValue
+  } = window.firebaseDB;
+
+  onValue(
+    ref(db,"cycles"),
+    (snapshot)=>{
+
+      cycles = [];
+
+      let history =
+      document.getElementById(
+        "history"
+      );
+
+      history.innerHTML = "";
+
+      snapshot.forEach((item)=>{
+
+        let data = item.val();
+
+        cycles.push({
+
+          id:item.key,
+
+          ...data
+
+        });
+
+      });
+
+      cycles
+      .slice()
+      .reverse()
+      .forEach(c=>{
+
+        let battery =
+        batteries.find(
+          b => b.id == c.batteryId
+        );
+
+        history.innerHTML += `
+
+          <div class="history-item">
+
+            <strong>
+              ${battery?.name || "Bateria"}
+            </strong>
+
+            <br>
+
+            Ciclo:
+            ${c.cycleNumber}
+
+            <br>
+
+            ${c.timestamp}
+
+          </div>
+
+        `;
+
+      });
+
+      updateDashboard();
+
+      drawChart();
+
+    }
+  );
+
+}
+
+/* DASHBOARD */
+
+function updateDashboard(){
+
+  document.getElementById(
+    "totalBatteries"
+  ).innerText =
+  batteries.length;
+
+}
+
+/* GRAFICO */
+
+function drawChart(){
+
+  let ctx =
+  document
+  .getElementById("chart")
+  .getContext("2d");
+
+  let labels = [];
+
+  let values = [];
+
+  batteries.forEach(b=>{
+
+    let registros =
+
+    cycles.filter(
+      c => c.batteryId == b.id
+    );
+
+    let total =
+
+    registros.length > 0
+
+    ? registros[
+      registros.length - 1
+    ].cycleNumber
+
+    : 0;
+
+    labels.push(b.name);
+
+    values.push(total);
+
+  });
+
+  if(chart){
+
+    chart.destroy();
+
+  }
+
+  chart = new Chart(ctx,{
+
+    type:"bar",
+
+    data:{
+
+      labels,
+
+      datasets:[{
+
+        label:"Ciclos",
+
+        data:values,
+
+        borderRadius:10
+
+      }]
+
+    },
+
+    options:{
+
+      responsive:true,
+
+      maintainAspectRatio:false
+
+    }
+
+  });
+
+}
+
+/* PDF */
+
+function exportPDF(){
+
+  const { jsPDF } =
+  window.jspdf;
+
+  let doc =
+  new jsPDF();
+
+  let y = 20;
+
+  doc.text(
+    "RELATORIO BATERIAS",
+    10,
+    y
+  );
+
+  y += 10;
+
+  cycles.forEach(c=>{
+
+    let battery =
+    batteries.find(
+      b => b.id == c.batteryId
+    );
+
+    doc.text(
+
+      `${battery?.name || ""} - Ciclo ${c.cycleNumber}`,
+
+      10,
+      y
+
+    );
+
+    y += 10;
+
+  });
+
+  doc.save(
+    "relatorio.pdf"
+  );
 
 }
 
