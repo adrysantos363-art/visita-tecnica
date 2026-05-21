@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -606,6 +607,162 @@ canvas{
 
 </div>
 
+<!-- FIREBASE -->
+
+<script type="module">
+
+import { initializeApp }
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+
+  getDatabase,
+  ref,
+  push,
+  set,
+  onValue,
+  remove
+
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+
+  apiKey:
+  "AIzaSyCdUOryg1RFkedMmGG68MjkmpUD5iW8XQE",
+
+  authDomain:
+  "controle-baterias-75a1a.firebaseapp.com",
+
+  databaseURL:
+  "https://controle-baterias-75a1a-default-rtdb.firebaseio.com",
+
+  projectId:
+  "controle-baterias-75a1a",
+
+  storageBucket:
+  "controle-baterias-75a1a.firebasestorage.app",
+
+  messagingSenderId:
+  "339558617145",
+
+  appId:
+  "1:339558617145:web:309d0917e879ea58c3fde8"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getDatabase(app);
+
+window.firebaseDB = {
+
+  db,
+  ref,
+  push,
+  set,
+  onValue,
+  remove
+
+};
+
+</script>
+
+<script>
+
+let user = null;
+
+/* LOGIN */
+
+function login(){
+
+  let name =
+  document.getElementById("name")
+  .value.trim();
+
+  let cpf =
+  document.getElementById("cpf")
+  .value.trim();
+
+  if(!name || cpf.length < 11){
+
+    alert("Preencha corretamente");
+
+    return;
+
+  }
+
+  user = { name, cpf };
+
+  localStorage.setItem(
+    "user",
+    JSON.stringify(user)
+  );
+
+  document.getElementById("login")
+  .style.display = "none";
+
+  document.getElementById("app")
+  .style.display = "block";
+
+  document.getElementById("userInfo")
+  .innerHTML =
+
+  "<strong>" +
+  user.name +
+  "</strong><br>" +
+  user.cpf;
+
+}
+
+/* AUTO LOGIN */
+
+window.onload = function(){
+
+  let saved =
+  JSON.parse(
+    localStorage.getItem("user")
+  );
+
+  if(saved){
+
+    user = saved;
+
+    document.getElementById("login")
+    .style.display = "none";
+
+    document.getElementById("app")
+    .style.display = "block";
+
+    document.getElementById("userInfo")
+    .innerHTML =
+
+    "<strong>" +
+    user.name +
+    "</strong><br>" +
+    user.cpf;
+
+  }
+
+};
+
+/* LOGOUT */
+
+function logout(){
+
+  localStorage.removeItem("user");
+
+  location.reload();
+
+}
+
+</script>
+
 </body>
 
 </html>
+```
