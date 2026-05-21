@@ -7,15 +7,20 @@
 
 <meta
   name="viewport"
-  content="width=device-width,
+  content="
+  width=device-width,
   initial-scale=1.0,
   maximum-scale=1.0,
-  user-scalable=no"
+  user-scalable=no
+  "
 />
 
 <title>DR1 • Controle de Baterias</title>
 
-<meta name="theme-color" content="#001f3f"/>
+<meta
+  name="theme-color"
+  content="#001f3f"
+/>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -24,11 +29,21 @@
 <style>
 
 *{
+
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  -webkit-tap-highlight-color:transparent;
+
+  font-family:
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  Arial;
+
+  -webkit-tap-highlight-color:
+  transparent;
+
 }
 
 body{
@@ -63,14 +78,17 @@ body{
 }
 
 #app{
+
   display:none;
+
 }
 
 /* CARD */
 
 .card{
 
-  background:rgba(255,255,255,0.12);
+  background:
+  rgba(255,255,255,0.12);
 
   backdrop-filter:blur(14px);
 
@@ -80,14 +98,17 @@ body{
 
   margin-bottom:15px;
 
-  box-shadow:0 4px 20px rgba(0,0,0,0.25);
+  box-shadow:
+  0 4px 20px rgba(0,0,0,0.25);
 
 }
 
 /* TITULOS */
 
 h2,h3{
+
   margin-bottom:10px;
+
 }
 
 /* INPUTS */
@@ -123,7 +144,9 @@ button{
 }
 
 button:active{
+
   transform:scale(0.98);
+
 }
 
 .btn{
@@ -196,7 +219,8 @@ button:active{
 
 .dashboard-card{
 
-  background:rgba(255,255,255,0.12);
+  background:
+  rgba(255,255,255,0.12);
 
   border-radius:24px;
 
@@ -206,7 +230,8 @@ button:active{
 
   backdrop-filter:blur(12px);
 
-  box-shadow:0 4px 20px rgba(0,0,0,0.25);
+  box-shadow:
+  0 4px 20px rgba(0,0,0,0.25);
 
 }
 
@@ -233,18 +258,34 @@ button:active{
 }
 
 .orange{
+
   border:2px solid orange;
+
 }
 
 .red{
+
   border:2px solid red;
+
 }
 
 .blue{
+
   border:2px solid #0a84ff;
+
 }
 
-/* LISTA */
+/* GRID BATERIAS */
+
+.battery-grid{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:12px;
+
+}
 
 .battery-item{
 
@@ -254,21 +295,25 @@ button:active{
 
   align-items:center;
 
-  gap:10px;
-
-  margin-top:10px;
-
-  background:rgba(255,255,255,0.08);
+  background:
+  rgba(255,255,255,0.08);
 
   padding:12px;
 
   border-radius:14px;
 
+  min-height:70px;
+
+  gap:10px;
+
 }
+
+/* HISTORICO */
 
 .history-item{
 
-  background:rgba(255,255,255,0.08);
+  background:
+  rgba(255,255,255,0.08);
 
   padding:12px;
 
@@ -283,15 +328,21 @@ button:active{
 /* STATUS */
 
 .status-ok{
+
   color:#34c759;
+
 }
 
 .status-warning{
+
   color:orange;
+
 }
 
 .status-danger{
+
   color:red;
+
 }
 
 /* GRAFICO */
@@ -316,12 +367,6 @@ canvas{
 
   }
 
-  .dashboard-grid{
-
-    grid-template-columns:1fr 1fr;
-
-  }
-
 }
 
 </style>
@@ -336,11 +381,16 @@ canvas{
 
   <div
     class="card"
-    style="width:100%;max-width:400px;"
+    style="
+    width:100%;
+    max-width:400px;
+    "
   >
 
     <h2 style="text-align:center;">
+
       🚁 Controle de Baterias
+
     </h2>
 
     <input
@@ -355,7 +405,8 @@ canvas{
       maxlength="11"
       placeholder="CPF"
       oninput="
-      this.value=this.value.replace(/[^0-9]/g,'')
+      this.value=
+      this.value.replace(/[^0-9]/g,'')
       "
     />
 
@@ -363,7 +414,9 @@ canvas{
       class="btn"
       onclick="login()"
     >
+
       Entrar
+
     </button>
 
   </div>
@@ -384,7 +437,9 @@ canvas{
       class="btn-logout"
       onclick="logout()"
     >
+
       Sair
+
     </button>
 
   </div>
@@ -429,7 +484,7 @@ canvas{
 
       <h2 id="totalCycles">0</h2>
 
-      <p>Total de ciclos</p>
+      <p>Total ciclos</p>
 
     </div>
 
@@ -443,7 +498,7 @@ canvas{
 
     <input
       id="searchBattery"
-      placeholder="Digite o nome da bateria"
+      placeholder="Digite o nome"
       onkeyup="filterBatteries()"
     />
 
@@ -464,7 +519,9 @@ canvas{
       class="btn"
       onclick="addBattery()"
     >
+
       Adicionar bateria
+
     </button>
 
   </div>
@@ -475,7 +532,10 @@ canvas{
 
     <h3>📋 Baterias</h3>
 
-    <div id="batteryList"></div>
+    <div
+      id="batteryList"
+      class="battery-grid"
+    ></div>
 
   </div>
 
@@ -498,7 +558,9 @@ canvas{
       class="btn"
       onclick="addCycle()"
     >
+
       Registrar ciclo
+
     </button>
 
   </div>
@@ -513,7 +575,9 @@ canvas{
       class="btn-blue"
       onclick="exportPDF()"
     >
+
       Gerar PDF
+
     </button>
 
     <div id="history"></div>
@@ -537,7 +601,8 @@ canvas{
 <script type="module">
 
 import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 
@@ -549,29 +614,39 @@ import {
   remove
 
 }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyCdUOryg1RFkedMmGG68MjkmpUD5iW8XQE",
+  apiKey:
+  "AIzaSyCdUOryg1RFkedMmGG68MjkmpUD5iW8XQE",
 
-  authDomain: "controle-baterias-75a1a.firebaseapp.com",
+  authDomain:
+  "controle-baterias-75a1a.firebaseapp.com",
 
-  databaseURL: "https://controle-baterias-75a1a-default-rtdb.firebaseio.com",
+  databaseURL:
+  "https://controle-baterias-75a1a-default-rtdb.firebaseio.com",
 
-  projectId: "controle-baterias-75a1a",
+  projectId:
+  "controle-baterias-75a1a",
 
-  storageBucket: "controle-baterias-75a1a.firebasestorage.app",
+  storageBucket:
+  "controle-baterias-75a1a.firebasestorage.app",
 
-  messagingSenderId: "339558617145",
+  messagingSenderId:
+  "339558617145",
 
-  appId: "1:339558617145:web:309d0917e879ea58c3fde8"
+  appId:
+  "1:339558617145:web:309d0917e879ea58c3fde8"
 
 };
 
-const app = initializeApp(firebaseConfig);
+const app =
+initializeApp(firebaseConfig);
 
-const db = getDatabase(app);
+const db =
+getDatabase(app);
 
 window.firebaseDB = {
 
@@ -634,7 +709,8 @@ function login(){
 
 window.onload = function(){
 
-  let saved = JSON.parse(
+  let saved =
+  JSON.parse(
     localStorage.getItem("user")
   );
 
@@ -682,7 +758,7 @@ function startApp(){
 
 }
 
-/* ADICIONAR BATERIA */
+/* ADD BATERIA */
 
 async function addBattery(){
 
@@ -721,7 +797,7 @@ async function addBattery(){
 
 }
 
-/* CARREGAR BATERIAS */
+/* LOAD BATERIAS */
 
 function loadBatteries(){
 
@@ -770,14 +846,18 @@ function loadBatteries(){
           <div class="battery-item">
 
             <span>
+
               🔋 ${battery.name}
+
             </span>
 
             <button
               class="btn-del"
               onclick="deleteBattery('${battery.id}')"
             >
+
               X
+
             </button>
 
           </div>
@@ -787,7 +867,9 @@ function loadBatteries(){
         select.innerHTML += `
 
           <option value="${battery.id}">
+
             ${battery.name}
+
           </option>
 
         `;
@@ -803,7 +885,7 @@ function loadBatteries(){
 
 }
 
-/* DELETAR */
+/* DELETE */
 
 async function deleteBattery(id){
 
@@ -813,9 +895,8 @@ async function deleteBattery(id){
     remove
   } = window.firebaseDB;
 
-  let senha = prompt(
-    "Senha do gestor"
-  );
+  let senha =
+  prompt("Senha gestor");
 
   if(senha !== "DR1DRONE"){
 
@@ -830,7 +911,7 @@ async function deleteBattery(id){
 
 }
 
-/* ADICIONAR CICLO */
+/* ADD CICLO */
 
 async function addCycle(){
 
@@ -853,7 +934,7 @@ async function addCycle(){
 
   if(!batteryId || !cycleNumber){
 
-    alert("Preencha os dados");
+    alert("Preencha");
     return;
 
   }
@@ -865,9 +946,11 @@ async function addCycle(){
 
     batteryId:batteryId,
 
-    cycleNumber:parseInt(cycleNumber),
+    cycleNumber:
+    parseInt(cycleNumber),
 
-    timestamp:new Date()
+    timestamp:
+    new Date()
     .toLocaleString()
 
   });
@@ -878,7 +961,7 @@ async function addCycle(){
 
 }
 
-/* CARREGAR CICLOS */
+/* LOAD CICLOS */
 
 function loadCycles(){
 
@@ -958,7 +1041,9 @@ function loadCycles(){
           <div class="history-item">
 
             <strong>
+
               ${battery?.name || "Bateria"}
+
             </strong>
 
             <br>
@@ -973,7 +1058,9 @@ function loadCycles(){
             <br>
 
             <strong class="${statusClass}">
+
               ${statusText}
+
             </strong>
 
           </div>
@@ -1059,7 +1146,9 @@ function updateDashboard(){
 function filterBatteries(){
 
   let value =
-  document.getElementById(
+
+  document
+  .getElementById(
     "searchBattery"
   )
   .value
@@ -1076,6 +1165,7 @@ function filterBatteries(){
     item.innerText.toLowerCase();
 
     item.style.display =
+
     text.includes(value)
 
     ? "flex"
@@ -1086,7 +1176,234 @@ function filterBatteries(){
 
 }
 
+/* GRAFICO */
+
+function drawChart(){
+
+  let ctx =
+
+  document
+  .getElementById("chart")
+  .getContext("2d");
+
+  let labels = [];
+
+  let values = [];
+
+  let colors = [];
+
+  batteries.forEach(b=>{
+
+    let registros =
+
+    cycles.filter(
+      c => c.batteryId == b.id
+    );
+
+    let total =
+
+    registros.length > 0
+
+    ? registros[
+      registros.length - 1
+    ].cycleNumber
+
+    : 0;
+
+    labels.push(b.name);
+
+    values.push(total);
+
+    if(total >= 220){
+
+      colors.push("red");
+
+    }
+
+    else if(total >= 195){
+
+      colors.push("orange");
+
+    }
+
+    else{
+
+      colors.push("#34c759");
+
+    }
+
+  });
+
+  if(chart){
+
+    chart.destroy();
+
+  }
+
+  chart = new Chart(ctx,{
+
+    type:"bar",
+
+    data:{
+
+      labels,
+
+      datasets:[{
+
+        label:"Ciclos",
+
+        data:values,
+
+        backgroundColor:colors,
+
+        borderRadius:10
+
+      }]
+
+    },
+
+    options:{
+
+      responsive:true,
+
+      maintainAspectRatio:false,
+
+      plugins:{
+
+        legend:{
+
+          labels:{
+
+            color:"white"
+
+          }
+
+        }
+
+      },
+
+      scales:{
+
+        x:{
+
+          ticks:{
+
+            color:"white"
+
+          }
+
+        },
+
+        y:{
+
+          beginAtZero:true,
+
+          max:360,
+
+          ticks:{
+
+            color:"white",
+
+            stepSize:10
+
+          }
+
+        }
+
+      }
+
+    }
+
+  });
+
+}
+
+/* PDF */
+
+function exportPDF(){
+
+  if(cycles.length === 0){
+
+    alert("Sem dados");
+    return;
+
+  }
+
+  const { jsPDF } =
+  window.jspdf;
+
+  let doc = new jsPDF();
+
+  let y = 20;
+
+  doc.setFontSize(18);
+
+  doc.text(
+    "RELATORIO BATERIAS",
+    10,
+    y
+  );
+
+  y += 12;
+
+  cycles.forEach((c,index)=>{
+
+    let battery =
+    batteries.find(
+      b => b.id == c.batteryId
+    );
+
+    doc.text(
+
+      `${index+1} - ${battery?.name || ""}`,
+
+      10,
+      y
+
+    );
+
+    y += 8;
+
+    doc.text(
+
+      `Ciclo: ${c.cycleNumber}`,
+
+      10,
+      y
+
+    );
+
+    y += 8;
+
+    doc.text(
+
+      `${c.timestamp}`,
+
+      10,
+      y
+
+    );
+
+    y += 12;
+
+    if(y > 270){
+
+      doc.addPage();
+
+      y = 20;
+
+    }
+
+  });
+
+  doc.save(
+    "relatorio_baterias.pdf"
+  );
+
+}
+
 </script>
 
 </body>
+
 </html>
