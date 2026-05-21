@@ -13,9 +13,9 @@
   user-scalable=no"
 />
 
-<meta name="theme-color" content="#001f3f"/>
+<title>DR1 • Controle de Baterias</title>
 
-<title>Controle de Baterias DR1</title>
+<meta name="theme-color" content="#001f3f"/>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -33,7 +33,12 @@
 
 body{
 
-  background:linear-gradient(135deg,#0a84ff,#001f3f);
+  background:
+  linear-gradient(
+    135deg,
+    #0a84ff,
+    #001f3f
+  );
 
   color:white;
 
@@ -42,6 +47,8 @@ body{
   padding:15px;
 
 }
+
+/* LOGIN */
 
 #login{
 
@@ -59,6 +66,8 @@ body{
   display:none;
 }
 
+/* CARD */
+
 .card{
 
   background:rgba(255,255,255,0.12);
@@ -75,15 +84,13 @@ body{
 
 }
 
-.logo{
+/* TITULOS */
 
-  width:180px;
-
-  display:block;
-
-  margin:20px auto;
-
+h2,h3{
+  margin-bottom:10px;
 }
+
+/* INPUTS */
 
 input,
 select,
@@ -105,6 +112,8 @@ button{
 
 }
 
+/* BOTÕES */
+
 button{
 
   font-weight:bold;
@@ -125,7 +134,7 @@ button:active{
 
 }
 
-.btn-export{
+.btn-blue{
 
   background:#0a84ff;
 
@@ -155,6 +164,8 @@ button:active{
 
 }
 
+/* TOPO */
+
 .top{
 
   display:flex;
@@ -168,6 +179,73 @@ button:active{
   margin-bottom:15px;
 
 }
+
+/* DASHBOARD */
+
+.dashboard-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(auto-fit,minmax(150px,1fr));
+
+  gap:15px;
+
+  margin-bottom:15px;
+
+}
+
+.dashboard-card{
+
+  background:rgba(255,255,255,0.12);
+
+  border-radius:24px;
+
+  padding:20px;
+
+  text-align:center;
+
+  backdrop-filter:blur(12px);
+
+  box-shadow:0 4px 20px rgba(0,0,0,0.25);
+
+}
+
+.dashboard-card span{
+
+  font-size:30px;
+
+}
+
+.dashboard-card h2{
+
+  font-size:32px;
+
+  margin-top:10px;
+
+}
+
+.dashboard-card p{
+
+  opacity:0.8;
+
+  margin-top:5px;
+
+}
+
+.orange{
+  border:2px solid orange;
+}
+
+.red{
+  border:2px solid red;
+}
+
+.blue{
+  border:2px solid #0a84ff;
+}
+
+/* LISTA */
 
 .battery-item{
 
@@ -199,23 +277,44 @@ button:active{
 
   margin-top:10px;
 
-  line-height:1.5;
+  line-height:1.6;
 
 }
+
+/* STATUS */
+
+.status-ok{
+  color:#34c759;
+}
+
+.status-warning{
+  color:orange;
+}
+
+.status-danger{
+  color:red;
+}
+
+/* CANVAS */
 
 canvas{
 
   width:100% !important;
 
-  height:240px !important;
+  height:260px !important;
 
 }
+
+/* RESPONSIVO */
 
 @media(max-width:600px){
 
   .top{
+
     flex-direction:column;
+
     align-items:stretch;
+
   }
 
 }
@@ -235,11 +334,6 @@ canvas{
     style="width:100%;max-width:400px;"
   >
 
-    <img
-      class="logo"
-      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0c2UiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuMzVlbSI+RFIxIEFFUk9EWU5FPC90ZXh0Pjwvc3ZnPg=="
-    />
-
     <h2 style="text-align:center;">
       🚁 Controle de Baterias
     </h2>
@@ -255,7 +349,9 @@ canvas{
       inputmode="numeric"
       maxlength="11"
       placeholder="CPF"
-      oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+      oninput="
+      this.value=this.value.replace(/[^0-9]/g,'')
+      "
     />
 
     <button
@@ -273,6 +369,8 @@ canvas{
 
 <div id="app">
 
+  <!-- TOPO -->
+
   <div class="top">
 
     <div id="userInfo"></div>
@@ -283,6 +381,66 @@ canvas{
     >
       Sair
     </button>
+
+  </div>
+
+  <!-- DASHBOARD -->
+
+  <div class="dashboard-grid">
+
+    <div class="dashboard-card">
+
+      <span>🔋</span>
+
+      <h2 id="totalBatteries">0</h2>
+
+      <p>Baterias</p>
+
+    </div>
+
+    <div class="dashboard-card orange">
+
+      <span>🟠</span>
+
+      <h2 id="warningBatteries">0</h2>
+
+      <p>Próximas da troca</p>
+
+    </div>
+
+    <div class="dashboard-card red">
+
+      <span>🔴</span>
+
+      <h2 id="criticalBatteries">0</h2>
+
+      <p>Críticas</p>
+
+    </div>
+
+    <div class="dashboard-card blue">
+
+      <span>⚡</span>
+
+      <h2 id="totalCycles">0</h2>
+
+      <p>Total de ciclos</p>
+
+    </div>
+
+  </div>
+
+  <!-- BUSCA -->
+
+  <div class="card">
+
+    <h3>🔎 Buscar bateria</h3>
+
+    <input
+      id="searchBattery"
+      placeholder="Digite o nome da bateria"
+      onkeyup="filterBatteries()"
+    />
 
   </div>
 
@@ -347,7 +505,7 @@ canvas{
     <h3>📄 Histórico</h3>
 
     <button
-      class="btn-export"
+      class="btn-blue"
       onclick="exportPDF()"
     >
       Gerar PDF
@@ -357,7 +515,7 @@ canvas{
 
   </div>
 
-  <!-- GRÁFICO -->
+  <!-- GRAFICO -->
 
   <div class="card">
 
@@ -388,8 +546,6 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// CONFIG FIREBASE
-
 const firebaseConfig = {
 
   apiKey: "AIzaSyCdUOryg1RFkedMmGG68MjkmpUD5iW8XQE",
@@ -408,13 +564,9 @@ const firebaseConfig = {
 
 };
 
-// INICIAR
-
 const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
-
-// GLOBAL
 
 window.firebaseDB = {
 
@@ -429,7 +581,7 @@ window.firebaseDB = {
 
 </script>
 
-<!-- SCRIPT PRINCIPAL -->
+<!-- SCRIPT -->
 
 <script>
 
@@ -441,19 +593,17 @@ let cycles = [];
 
 let chart = null;
 
-// LOGIN
+/* LOGIN */
 
 function login(){
 
-  let name = document
-    .getElementById("name")
-    .value
-    .trim();
+  let name =
+  document.getElementById("name")
+  .value.trim();
 
-  let cpf = document
-    .getElementById("cpf")
-    .value
-    .trim();
+  let cpf =
+  document.getElementById("cpf")
+  .value.trim();
 
   if(!name || cpf.length < 11){
 
@@ -477,7 +627,7 @@ function login(){
 
 }
 
-// AUTO LOGIN
+/* AUTO LOGIN */
 
 window.onload = function(){
 
@@ -499,7 +649,7 @@ window.onload = function(){
 
 };
 
-// LOGOUT
+/* LOGOUT */
 
 function logout(){
 
@@ -509,45 +659,40 @@ function logout(){
 
 }
 
-// START APP
+/* START */
 
 function startApp(){
 
-  document
-    .getElementById("login")
-    .style.display = "none";
+  document.getElementById("login")
+  .style.display = "none";
 
-  document
-    .getElementById("app")
-    .style.display = "block";
+  document.getElementById("app")
+  .style.display = "block";
 
-  document
-    .getElementById("userInfo")
-    .innerHTML =
-      "<strong>" +
-      user.name +
-      "</strong><br>" +
-      user.cpf;
+  document.getElementById("userInfo")
+  .innerHTML =
+
+  "<strong>" +
+  user.name +
+  "</strong><br>" +
+  user.cpf;
 
 }
 
-// ADICIONAR BATERIA
+/* ADICIONAR BATERIA */
 
 async function addBattery(){
 
   const {
-
     db,
     ref,
     push,
     set
-
   } = window.firebaseDB;
 
-  let name = document
-    .getElementById("batteryName")
-    .value
-    .trim();
+  let name =
+  document.getElementById("batteryName")
+  .value.trim();
 
   if(!name){
 
@@ -556,36 +701,31 @@ async function addBattery(){
 
   }
 
-  const newBattery = push(
-    ref(db,"batteries")
-  );
+  const newBattery =
+  push(ref(db,"batteries"));
 
   await set(newBattery,{
 
     name:name,
 
-    user:user.cpf,
-
     created:Date.now()
 
   });
 
-  document
-    .getElementById("batteryName")
-    .value = "";
+  document.getElementById(
+    "batteryName"
+  ).value = "";
 
 }
 
-// CARREGAR BATERIAS
+/* CARREGAR BATERIAS */
 
 function loadBatteries(){
 
   const {
-
     db,
     ref,
     onValue
-
   } = window.firebaseDB;
 
   onValue(
@@ -594,11 +734,15 @@ function loadBatteries(){
 
       batteries = [];
 
-      let list = document
-        .getElementById("batteryList");
+      let list =
+      document.getElementById(
+        "batteryList"
+      );
 
-      let select = document
-        .getElementById("batterySelect");
+      let select =
+      document.getElementById(
+        "batterySelect"
+      );
 
       list.innerHTML = "";
 
@@ -608,48 +752,46 @@ function loadBatteries(){
 
         let data = item.val();
 
-        if(data.user == user.cpf){
+        let battery = {
 
-          let battery = {
+          id:item.key,
 
-            id:item.key,
+          name:data.name
 
-            name:data.name
+        };
 
-          };
+        batteries.push(battery);
 
-          batteries.push(battery);
+        list.innerHTML += `
 
-          list.innerHTML += `
+          <div class="battery-item">
 
-            <div class="battery-item">
+            <span>
+              🔋 ${battery.name}
+            </span>
 
-              <span>
-                🔋 ${battery.name}
-              </span>
+            <button
+              class="btn-del"
+              onclick="deleteBattery('${battery.id}')"
+            >
+              X
+            </button>
 
-              <button
-                class="btn-del"
-                onclick="deleteBattery('${battery.id}')"
-              >
-                X
-              </button>
+          </div>
 
-            </div>
+        `;
 
-          `;
+        select.innerHTML += `
 
-          select.innerHTML += `
+          <option value="${battery.id}">
+            ${battery.name}
+          </option>
 
-            <option value="${battery.id}">
-              ${battery.name}
-            </option>
-
-          `;
-
-        }
+        `;
 
       });
+
+      updateDashboard();
 
       drawChart();
 
@@ -658,16 +800,14 @@ function loadBatteries(){
 
 }
 
-// DELETAR
+/* DELETAR */
 
 async function deleteBattery(id){
 
   const {
-
     db,
     ref,
     remove
-
   } = window.firebaseDB;
 
   let senha = prompt(
@@ -687,26 +827,26 @@ async function deleteBattery(id){
 
 }
 
-// ADICIONAR CICLO
+/* ADICIONAR CICLO */
 
 async function addCycle(){
 
   const {
-
     db,
     ref,
     push,
     set
-
   } = window.firebaseDB;
 
-  let batteryId = document
-    .getElementById("batterySelect")
-    .value;
+  let batteryId =
+  document.getElementById(
+    "batterySelect"
+  ).value;
 
-  let cycleNumber = document
-    .getElementById("cycleNumber")
-    .value;
+  let cycleNumber =
+  document.getElementById(
+    "cycleNumber"
+  ).value;
 
   if(!batteryId || !cycleNumber){
 
@@ -715,9 +855,8 @@ async function addCycle(){
 
   }
 
-  const newCycle = push(
-    ref(db,"cycles")
-  );
+  const newCycle =
+  push(ref(db,"cycles"));
 
   await set(newCycle,{
 
@@ -725,29 +864,25 @@ async function addCycle(){
 
     cycleNumber:parseInt(cycleNumber),
 
-    user:user.cpf,
-
     timestamp:new Date()
-      .toLocaleString()
+    .toLocaleString()
 
   });
 
-  document
-    .getElementById("cycleNumber")
-    .value = "";
+  document.getElementById(
+    "cycleNumber"
+  ).value = "";
 
 }
 
-// CARREGAR CICLOS
+/* CARREGAR CICLOS */
 
 function loadCycles(){
 
   const {
-
     db,
     ref,
     onValue
-
   } = window.firebaseDB;
 
   onValue(
@@ -756,8 +891,10 @@ function loadCycles(){
 
       cycles = [];
 
-      let history = document
-        .getElementById("history");
+      let history =
+      document.getElementById(
+        "history"
+      );
 
       history.innerHTML = "";
 
@@ -765,66 +902,84 @@ function loadCycles(){
 
         let data = item.val();
 
-        if(data.user == user.cpf){
+        cycles.push({
 
-          cycles.push({
+          id:item.key,
 
-            id:item.key,
+          ...data
 
-            ...data
-
-          });
-
-        }
+        });
 
       });
 
       cycles
-        .slice()
-        .reverse()
-        .forEach(c=>{
+      .slice()
+      .reverse()
+      .forEach(c=>{
 
-          let battery = batteries.find(
-            b => b.id == c.batteryId
-          );
+        let battery =
+        batteries.find(
+          b => b.id == c.batteryId
+        );
 
-          let status = "🟢 OK";
+        let statusClass =
+        "status-ok";
 
-          if(c.cycleNumber >= 220){
+        let statusText =
+        "🟢 OK";
 
-            status = "🔴 TROCA URGENTE";
+        if(c.cycleNumber >= 220){
 
-          }else if(c.cycleNumber >= 195){
+          statusClass =
+          "status-danger";
 
-            status = "🟠 TROCAR EM BREVE";
+          statusText =
+          "🔴 TROCA URGENTE";
 
-          }
+        }
 
-          history.innerHTML += `
+        else if(
+          c.cycleNumber >= 195
+        ){
 
-            <div class="history-item">
+          statusClass =
+          "status-warning";
 
-              <strong>
-                ${battery?.name || "Bateria"}
-              </strong>
+          statusText =
+          "🟠 TROCAR EM BREVE";
 
-              <br>
+        }
 
-              Ciclo: ${c.cycleNumber}
+        history.innerHTML += `
 
-              <br>
+          <div class="history-item">
 
-              ${c.timestamp}
+            <strong>
+              ${battery?.name || "Bateria"}
+            </strong>
 
-              <br>
+            <br>
 
-              ${status}
+            Ciclo:
+            ${c.cycleNumber}
 
-            </div>
+            <br>
 
-          `;
+            ${c.timestamp}
 
-        });
+            <br>
+
+            <strong class="${statusClass}">
+              ${statusText}
+            </strong>
+
+          </div>
+
+        `;
+
+      });
+
+      updateDashboard();
 
       drawChart();
 
@@ -833,13 +988,108 @@ function loadCycles(){
 
 }
 
-// GRÁFICO
+/* DASHBOARD */
+
+function updateDashboard(){
+
+  let total =
+  batteries.length;
+
+  let warning = 0;
+
+  let critical = 0;
+
+  let totalCycles = 0;
+
+  batteries.forEach(b=>{
+
+    let registros =
+    cycles.filter(
+      c => c.batteryId == b.id
+    );
+
+    let ultimo =
+    registros.length > 0
+
+    ? registros[
+      registros.length - 1
+    ].cycleNumber
+
+    : 0;
+
+    totalCycles += ultimo;
+
+    if(ultimo >= 220){
+
+      critical++;
+
+    }
+
+    else if(ultimo >= 195){
+
+      warning++;
+
+    }
+
+  });
+
+  document.getElementById(
+    "totalBatteries"
+  ).innerText = total;
+
+  document.getElementById(
+    "warningBatteries"
+  ).innerText = warning;
+
+  document.getElementById(
+    "criticalBatteries"
+  ).innerText = critical;
+
+  document.getElementById(
+    "totalCycles"
+  ).innerText = totalCycles;
+
+}
+
+/* BUSCA */
+
+function filterBatteries(){
+
+  let value =
+  document.getElementById(
+    "searchBattery"
+  )
+  .value
+  .toLowerCase();
+
+  let items =
+  document.querySelectorAll(
+    ".battery-item"
+  );
+
+  items.forEach(item=>{
+
+    let text =
+    item.innerText.toLowerCase();
+
+    item.style.display =
+    text.includes(value)
+
+    ? "flex"
+
+    : "none";
+
+  });
+
+}
+
+/* GRÁFICO */
 
 function drawChart(){
 
-  let ctx = document
-    .getElementById("chart")
-    .getContext("2d");
+  let ctx =
+  document.getElementById("chart")
+  .getContext("2d");
 
   let labels = [];
 
@@ -849,15 +1099,19 @@ function drawChart(){
 
   batteries.forEach(b=>{
 
-    let registros = cycles.filter(
+    let registros =
+    cycles.filter(
       c => c.batteryId == b.id
     );
 
-    let total = registros.length > 0
-      ? registros[
-          registros.length - 1
-        ].cycleNumber
-      : 0;
+    let total =
+    registros.length > 0
+
+    ? registros[
+      registros.length - 1
+    ].cycleNumber
+
+    : 0;
 
     labels.push(b.name);
 
@@ -867,11 +1121,15 @@ function drawChart(){
 
       colors.push("red");
 
-    }else if(total >= 195){
+    }
+
+    else if(total >= 195){
 
       colors.push("orange");
 
-    }else{
+    }
+
+    else{
 
       colors.push("#34c759");
 
@@ -957,7 +1215,7 @@ function drawChart(){
 
 }
 
-// PDF
+/* PDF */
 
 function exportPDF(){
 
@@ -968,7 +1226,8 @@ function exportPDF(){
 
   }
 
-  const { jsPDF } = window.jspdf;
+  const { jsPDF } =
+  window.jspdf;
 
   let doc = new jsPDF();
 
@@ -984,41 +1243,12 @@ function exportPDF(){
 
   y += 12;
 
-  doc.setFontSize(12);
-
-  doc.text(
-    "Nome: " + user.name,
-    10,
-    y
-  );
-
-  y += 8;
-
-  doc.text(
-    "CPF: " + user.cpf,
-    10,
-    y
-  );
-
-  y += 12;
-
   cycles.forEach((c,index)=>{
 
-    let battery = batteries.find(
+    let battery =
+    batteries.find(
       b => b.id == c.batteryId
     );
-
-    let status = "OK";
-
-    if(c.cycleNumber >= 220){
-
-      status = "TROCA URGENTE";
-
-    }else if(c.cycleNumber >= 195){
-
-      status = "TROCAR EM BREVE";
-
-    }
 
     doc.text(
       `${index+1} - ${battery?.name || ""}`,
@@ -1026,7 +1256,7 @@ function exportPDF(){
       y
     );
 
-    y += 7;
+    y += 8;
 
     doc.text(
       `Ciclo: ${c.cycleNumber}`,
@@ -1034,18 +1264,10 @@ function exportPDF(){
       y
     );
 
-    y += 7;
+    y += 8;
 
     doc.text(
-      `Status: ${status}`,
-      10,
-      y
-    );
-
-    y += 7;
-
-    doc.text(
-      `Data: ${c.timestamp}`,
+      `${c.timestamp}`,
       10,
       y
     );
