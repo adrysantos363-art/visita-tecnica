@@ -186,8 +186,7 @@ button:active{
 
   display:grid;
 
-  grid-template-columns:
-  repeat(auto-fit,minmax(150px,1fr));
+  grid-template-columns:1fr 1fr;
 
   gap:15px;
 
@@ -295,7 +294,7 @@ button:active{
   color:red;
 }
 
-/* CANVAS */
+/* GRAFICO */
 
 canvas{
 
@@ -314,6 +313,12 @@ canvas{
     flex-direction:column;
 
     align-items:stretch;
+
+  }
+
+  .dashboard-grid{
+
+    grid-template-columns:1fr 1fr;
 
   }
 
@@ -498,7 +503,7 @@ canvas{
 
   </div>
 
-  <!-- HISTÓRICO -->
+  <!-- HISTORICO -->
 
   <div class="card">
 
@@ -580,8 +585,6 @@ window.firebaseDB = {
 };
 
 </script>
-
-<!-- SCRIPT -->
 
 <script>
 
@@ -1080,213 +1083,6 @@ function filterBatteries(){
     : "none";
 
   });
-
-}
-
-/* GRÁFICO */
-
-function drawChart(){
-
-  let ctx =
-  document.getElementById("chart")
-  .getContext("2d");
-
-  let labels = [];
-
-  let values = [];
-
-  let colors = [];
-
-  batteries.forEach(b=>{
-
-    let registros =
-    cycles.filter(
-      c => c.batteryId == b.id
-    );
-
-    let total =
-    registros.length > 0
-
-    ? registros[
-      registros.length - 1
-    ].cycleNumber
-
-    : 0;
-
-    labels.push(b.name);
-
-    values.push(total);
-
-    if(total >= 220){
-
-      colors.push("red");
-
-    }
-
-    else if(total >= 195){
-
-      colors.push("orange");
-
-    }
-
-    else{
-
-      colors.push("#34c759");
-
-    }
-
-  });
-
-  if(chart){
-
-    chart.destroy();
-
-  }
-
-  chart = new Chart(ctx,{
-
-    type:"bar",
-
-    data:{
-
-      labels,
-
-      datasets:[{
-
-        label:"Ciclos",
-
-        data:values,
-
-        backgroundColor:colors,
-
-        borderRadius:10
-
-      }]
-
-    },
-
-    options:{
-
-      responsive:true,
-
-      maintainAspectRatio:false,
-
-      plugins:{
-
-        legend:{
-
-          labels:{
-            color:"white"
-          }
-
-        }
-
-      },
-
-      scales:{
-
-        x:{
-          ticks:{
-            color:"white"
-          }
-        },
-
-        y:{
-
-          beginAtZero:true,
-
-          max:360,
-
-          ticks:{
-
-            color:"white",
-
-            stepSize:10
-
-          }
-
-        }
-
-      }
-
-    }
-
-  });
-
-}
-
-/* PDF */
-
-function exportPDF(){
-
-  if(cycles.length === 0){
-
-    alert("Sem dados");
-    return;
-
-  }
-
-  const { jsPDF } =
-  window.jspdf;
-
-  let doc = new jsPDF();
-
-  let y = 20;
-
-  doc.setFontSize(18);
-
-  doc.text(
-    "RELATORIO DE BATERIAS",
-    10,
-    y
-  );
-
-  y += 12;
-
-  cycles.forEach((c,index)=>{
-
-    let battery =
-    batteries.find(
-      b => b.id == c.batteryId
-    );
-
-    doc.text(
-      `${index+1} - ${battery?.name || ""}`,
-      10,
-      y
-    );
-
-    y += 8;
-
-    doc.text(
-      `Ciclo: ${c.cycleNumber}`,
-      10,
-      y
-    );
-
-    y += 8;
-
-    doc.text(
-      `${c.timestamp}`,
-      10,
-      y
-    );
-
-    y += 12;
-
-    if(y > 270){
-
-      doc.addPage();
-
-      y = 20;
-
-    }
-
-  });
-
-  doc.save(
-    "relatorio_baterias.pdf"
-  );
 
 }
 
