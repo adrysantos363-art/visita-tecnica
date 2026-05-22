@@ -1327,12 +1327,23 @@ function drawChart(){
 }
 
 /* PDF */
-
 function exportPDF(){
 
   if(cycles.length === 0){
 
     alert("Sem dados");
+
+    return;
+
+  }
+
+  let confirmar = confirm(
+
+    "⚠️ Após gerar o PDF todos os ciclos serão apagados.\n\nDeseja continuar?"
+
+  );
+
+  if(!confirmar){
 
     return;
 
@@ -1410,6 +1421,22 @@ function exportPDF(){
 
   doc.save(
     "relatorio_baterias.pdf"
+  );
+
+  /* APAGAR CICLOS */
+
+  const {
+    db,
+    ref,
+    remove
+  } = window.firebaseDB;
+
+  remove(
+    ref(db,"cycles")
+  );
+
+  alert(
+    "PDF gerado e ciclos apagados com sucesso."
   );
 
 }
