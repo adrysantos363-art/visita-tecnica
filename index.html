@@ -338,26 +338,6 @@ button:active{
 
 }
 
-/* STATUS */
-
-.status-ok{
-
-  color:#34c759;
-
-}
-
-.status-warning{
-
-  color:orange;
-
-}
-
-.status-danger{
-
-  color:red;
-
-}
-
 /* GRAFICO */
 
 canvas{
@@ -377,6 +357,12 @@ canvas{
     flex-direction:column;
 
     align-items:stretch;
+
+  }
+
+  .battery-grid{
+
+    grid-template-columns:1fr;
 
   }
 
@@ -596,6 +582,16 @@ canvas{
 
   </div>
 
+  <!-- HISTÓRICO POR DATA -->
+
+  <div class="card">
+
+    <h3>🗂 Histórico Geral</h3>
+
+    <div id="historyByDate"></div>
+
+  </div>
+
   <!-- GRAFICO -->
 
   <div class="card">
@@ -672,8 +668,6 @@ window.firebaseDB = {
 };
 
 </script>
-
-<!-- SCRIPT PRINCIPAL -->
 
 <script>
 
@@ -800,11 +794,8 @@ async function addBattery(){
   push(ref(db,"batteries"));
 
   await set(newBattery,{
-
     name:name,
-
     created:Date.now()
-
   });
 
   document.getElementById(
@@ -848,11 +839,8 @@ function loadBatteries(){
         let data = item.val();
 
         let battery = {
-
           id:item.key,
-
           name:data.name
-
         };
 
         batteries.push(battery);
@@ -995,18 +983,22 @@ function loadCycles(){
         "history"
       );
 
+      let historyByDate =
+      document.getElementById(
+        "historyByDate"
+      );
+
       history.innerHTML = "";
+
+      historyByDate.innerHTML = "";
 
       snapshot.forEach((item)=>{
 
         let data = item.val();
 
         cycles.push({
-
           id:item.key,
-
           ...data
-
         });
 
       });
@@ -1021,60 +1013,98 @@ function loadCycles(){
           b => b.id == c.batteryId
         );
 
-        let status =
-        "🟢 OK";
-
-        let classe =
-        "status-ok";
-
-        if(c.cycleNumber >= 220){
-
-          status =
-          "🔴 TROCA URGENTE";
-
-          classe =
-          "status-danger";
-
-        }
-
-        else if(
-          c.cycleNumber >= 195
-        ){
-
-          status =
-          "🟠 TROCAR EM BREVE";
-
-          classe =
-          "status-warning";
-
-        }
-
         history.innerHTML += `
 
           <div class="history-item">
 
             <strong>
-              ${battery?.name || "Bateria"}
+              ${battery?.name || ""}
             </strong>
 
             <br>
 
-            Ciclo:
+            ⚡ Ciclo:
             ${c.cycleNumber}
 
             <br>
 
-            ${c.timestamp}
-
-            <br>
-
-            <strong class="${classe}">
-              ${status}
-            </strong>
+            🕒 ${c.timestamp}
 
           </div>
 
         `;
+
+      });
+
+      let grouped = {};
+
+      cycles.forEach(c=>{
+
+        let data =
+        c.timestamp.split(",")[0];
+
+        if(!grouped[data]){
+
+          grouped[data] = [];
+
+        }
+
+        grouped[data].push(c);
+
+      });
+
+      Object.keys(grouped)
+      .reverse()
+      .forEach(data=>{
+
+        historyByDate.innerHTML += `
+
+          <div
+            class="history-item"
+            style="
+            background:
+            rgba(255,255,255,0.12);
+          ">
+
+            <h3>
+              📅 ${data}
+            </h3>
+
+          </div>
+
+        `;
+
+        grouped[data]
+        .forEach(c=>{
+
+          let battery =
+          batteries.find(
+            b => b.id == c.batteryId
+          );
+
+          historyByDate.innerHTML += `
+
+            <div class="history-item">
+
+              🔋
+              <strong>
+                ${battery?.name || ""}
+              </strong>
+
+              <br>
+
+              ⚡ Ciclo:
+              ${c.cycleNumber}
+
+              <br>
+
+              🕒 ${c.timestamp}
+
+            </div>
+
+          `;
+
+        });
 
       });
 
@@ -1091,65 +1121,10 @@ function loadCycles(){
 
 function updateDashboard(){
 
-  let warning = 0;
-
-  let critical = 0;
-
-  let totalCycles = 0;
-
-  batteries.forEach(b=>{
-
-    let registros =
-
-    cycles.filter(
-      c => c.batteryId == b.id
-    );
-
-    let ultimo =
-
-    registros.length > 0
-
-    ? registros[
-      registros.length - 1
-    ].cycleNumber
-
-    : 0;
-
-    totalCycles += ultimo;
-
-    if(ultimo >= 220){
-
-      critical++;
-
-    }
-
-    else if(ultimo >= 195){
-
-      warning++;
-
-    }
-
-  });
-
   document.getElementById(
     "totalBatteries"
   ).innerText =
   batteries.length;
-
-  document.getElementById(
-    "warningBatteries"
-  ).innerText =
-  warning;
-
-  document.getElementById(
-    "criticalBatteries"
-  ).innerText =
-  critical;
-
-  document.getElementById(
-    "totalCycles"
-  ).innerText =
-  totalCycles;
 
 }
 
@@ -1202,8 +1177,6 @@ function drawChart(){
 
   let values = [];
 
-  let colors = [];
-
   batteries.forEach(b=>{
 
     let registros =
@@ -1225,24 +1198,6 @@ function drawChart(){
     labels.push(b.name);
 
     values.push(total);
-
-    if(total >= 220){
-
-      colors.push("red");
-
-    }
-
-    else if(total >= 195){
-
-      colors.push("orange");
-
-    }
-
-    else{
-
-      colors.push("#34c759");
-
-    }
 
   });
 
@@ -1266,8 +1221,6 @@ function drawChart(){
 
         data:values,
 
-        backgroundColor:colors,
-
         borderRadius:10
 
       }]
@@ -1275,51 +1228,8 @@ function drawChart(){
     },
 
     options:{
-
       responsive:true,
-
-      maintainAspectRatio:false,
-
-      plugins:{
-
-        legend:{
-
-          labels:{
-
-            color:"white"
-
-          }
-
-        }
-
-      },
-
-      scales:{
-
-        x:{
-
-          ticks:{
-
-            color:"white"
-
-          }
-
-        },
-
-        y:{
-
-          beginAtZero:true,
-
-          ticks:{
-
-            color:"white"
-
-          }
-
-        }
-
-      }
-
+      maintainAspectRatio:false
     }
 
   });
@@ -1327,6 +1237,7 @@ function drawChart(){
 }
 
 /* PDF */
+
 function exportPDF(){
 
   if(cycles.length === 0){
@@ -1422,8 +1333,6 @@ function exportPDF(){
   doc.save(
     "relatorio_baterias.pdf"
   );
-
-  /* APAGAR CICLOS */
 
   const {
     db,
